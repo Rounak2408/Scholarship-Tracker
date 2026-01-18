@@ -37,8 +37,9 @@ import { scholarshipPortals } from "@/lib/scholarship-data"
 import { Chatbot } from "@/components/chatbot/chatbot"
 import { getEligibleScholarships, type EligibleScholarship } from "@/lib/scholarship-helper"
 import type { StudentProfile } from "@/lib/firebase/profile"
+import { STORAGE_KEYS, ROUTES } from "@/lib/constants"
 
-const STORAGE_KEY = "scholarship_applications"
+const STORAGE_KEY = STORAGE_KEYS.SCHOLARSHIP_APPLICATIONS
 
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null)
@@ -105,7 +106,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const currentUser = getCurrentUser()
     if (!currentUser) {
-      router.push("/auth")
+      router.push(ROUTES.AUTH)
       return
     }
 
@@ -114,16 +115,13 @@ export default function DashboardPage() {
     // Fetch user profile (non-blocking, handles offline gracefully)
     getUserProfile(currentUser.uid)
       .then((userProfile) => {
-        if (!userProfile) {
-          // Profile might not exist if Firestore write was still in progress or offline
-          // It will be created/loaded on next page load when connection is restored
-          console.log("User profile not found yet, will be loaded when available")
-        }
         setProfile(userProfile)
       })
       .catch((error) => {
-        // Error already handled in getUserProfile - just log for debugging
-        console.warn("Profile fetch completed with warning:", error)
+        // Error already handled in getUserProfile
+        if (process.env.NODE_ENV === "development") {
+          console.warn("Profile fetch completed with warning:", error)
+        }
       })
 
     // Check if student profile is complete (instant - localStorage)
@@ -135,7 +133,7 @@ export default function DashboardPage() {
       if (!complete) {
         // Redirect to profile page if not complete (after a short delay to show dashboard)
         setTimeout(() => {
-          router.push("/profile")
+          router.push(ROUTES.PROFILE)
         }, 500)
       }
     } catch (error) {
@@ -152,7 +150,7 @@ export default function DashboardPage() {
       // Clear localStorage profile data
       clearProfile()
       await logOut()
-      router.push("/auth")
+      router.push(ROUTES.AUTH)
     } catch (error) {
       console.error("Error signing out:", error)
     } finally {

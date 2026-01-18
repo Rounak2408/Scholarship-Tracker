@@ -27,7 +27,7 @@ export function Chatbot({ className }: ChatbotProps) {
     {
       id: "1",
       role: "assistant",
-      content: "Hello! 👋 I'm your scholarship advisor. I can help you:\n\n• Find scholarships based on your state\n• Show you state, central, and private scholarships in order\n• Provide direct links to application portals\n• Answer questions about eligibility and requirements\n\nHow can I assist you today?",
+      content: CHATBOT_MESSAGES.GREETING,
       timestamp: new Date(),
     },
   ])
@@ -54,7 +54,7 @@ export function Chatbot({ className }: ChatbotProps) {
     const checkApiStatus = async () => {
       try {
         // Make a lightweight test call
-        const response = await fetch("/api/chatbot", {
+        const response = await fetch(API_ENDPOINTS.CHATBOT, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ message: "hi" }),
@@ -249,7 +249,7 @@ export function Chatbot({ className }: ChatbotProps) {
         } else {
           // Use OpenAI for ALL other questions - it can handle everything
           try {
-            const response = await fetch("/api/chatbot", {
+            const response = await fetch(API_ENDPOINTS.CHATBOT, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",

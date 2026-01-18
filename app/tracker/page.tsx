@@ -10,8 +10,9 @@ import type { SavedApplication } from "@/lib/tracker-data"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle, Inbox, Loader2 } from "lucide-react"
 import { getCurrentUser } from "@/lib/firebase/auth"
+import { STORAGE_KEYS, ROUTES } from "@/lib/constants"
 
-const STORAGE_KEY = "scholarship_applications"
+const STORAGE_KEY = STORAGE_KEYS.SCHOLARSHIP_APPLICATIONS
 
 export default function TrackerPage() {
   const [applications, setApplications] = useState<SavedApplication[]>([])
@@ -26,7 +27,7 @@ export default function TrackerPage() {
       if (!currentUser) {
         // Redirect to auth page with return URL so user comes back to tracker after login
         const returnUrl = encodeURIComponent("/tracker")
-        router.push(`/auth?returnUrl=${returnUrl}`)
+        router.push(`${ROUTES.AUTH}?returnUrl=${returnUrl}`)
         return
       }
       setIsCheckingAuth(false)
@@ -42,7 +43,9 @@ export default function TrackerPage() {
       try {
         setApplications(JSON.parse(saved))
       } catch (error) {
-        console.error("Failed to load applications:", error)
+        if (process.env.NODE_ENV === "development") {
+          console.error("Failed to load applications:", error)
+        }
       }
     }
     setIsLoaded(true)
